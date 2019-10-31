@@ -1,34 +1,32 @@
-
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 /**
- *功能简介:.
+ * 功能简介:.
+ *
  * @author cq
  * @version 1.0
- * * */
-public class SimpleConsumer {
-
+ * *
+ */
+public class PublishConsumer2 {
     public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("192.168.44.128");
+
         Connection connection = connectionFactory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare("first_queue", false, false, false, null);
-        Consumer defaultConsumer = new DefaultConsumer(channel){
+        channel.queueDeclare("pb_queue2", true, false, false, null);
+        //channel.queueBind("pb_queue2", "pb_exchange", "");
+        DefaultConsumer defaultConsumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                System.out.println( Thread.currentThread().getName() + new String(body));
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                System.out.println(new String(body));
             }
         };
 
-        channel.basicConsume("first_queue", true, defaultConsumer);
+        System.out.println("consumer start");
+        channel.basicConsume("pb_queue2", true, defaultConsumer);
     }
 }

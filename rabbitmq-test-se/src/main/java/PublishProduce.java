@@ -8,24 +8,26 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 /**
- *功能简介:.
+ * 功能简介:.
+ *
  * @author cq
  * @version 1.0
- * * */
-public class SimpleProduce {
+ * *
+ */
+public class PublishProduce {
+    public static void main(String[] args) throws IOException, TimeoutException {
 
-    public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("192.168.44.128");
         Connection connection = connectionFactory.newConnection();
+
         Channel channel = connection.createChannel();
-        channel.queueDeclare("first_queue", false, false, false, null);
+        //channel.exchangeDeclare("pb_exchange", "fanout");
+        //channel.queueDeclare("pb_queue3", false, false, false, null);
+        //channel.queueBind("pb_queue3", "pb_exchange", "");
         for (int i = 0; i < 10; i++) {
-            channel.basicPublish("","first_queue",null,("first message" + i).getBytes());
-
+            channel.basicPublish("direct_exchange", "", null, ("发布消息" + i).getBytes());
         }
-        System.out.println("message is done");
-
         channel.close();
         connection.close();
 
